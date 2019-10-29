@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService.Domain", "AuthenticationService.Domain\AuthenticationService.Domain.csproj", "{76BE9F88-2ECB-46EF-B766-B319B3D784C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationService.Domain", "AuthenticationService.Domain\AuthenticationService.Domain.csproj", "{76BE9F88-2ECB-46EF-B766-B319B3D784C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService.UI", "AuthenticationService.UI\AuthenticationService.UI.csproj", "{DC294827-A634-4311-8A18-BC72964B100D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationService.UI", "AuthenticationService.UI\AuthenticationService.UI.csproj", "{DC294827-A634-4311-8A18-BC72964B100D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService.Data", "AuthenticationService.Data\AuthenticationService.Data.csproj", "{164F32A0-090E-4DCC-BE35-3A761A267BF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationService.Data", "AuthenticationService.Data\AuthenticationService.Data.csproj", "{164F32A0-090E-4DCC-BE35-3A761A267BF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService.Application", "AuthenticationService.Application\AuthenticationService.Application.csproj", "{80CFC5A3-6300-4678-9CAB-C6DC30D88F76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{164F32A0-090E-4DCC-BE35-3A761A267BF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{164F32A0-090E-4DCC-BE35-3A761A267BF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{164F32A0-090E-4DCC-BE35-3A761A267BF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80CFC5A3-6300-4678-9CAB-C6DC30D88F76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80CFC5A3-6300-4678-9CAB-C6DC30D88F76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80CFC5A3-6300-4678-9CAB-C6DC30D88F76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80CFC5A3-6300-4678-9CAB-C6DC30D88F76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
