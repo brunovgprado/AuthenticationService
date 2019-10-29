@@ -1,4 +1,5 @@
-﻿using AuthenticationService.Domain.Models;
+﻿using AuthenticationService.Domain.Interfaces.Services;
+using AuthenticationService.Domain.Models;
 using AuthenticationService.UI.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using System;
