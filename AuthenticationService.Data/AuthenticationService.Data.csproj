@@ -6,7 +6,14 @@
 
   <ItemGroup>
     <Folder Include="Context\" />
-    <Folder Include="Repository\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AuthenticationService.Domain\AuthenticationService.Domain.csproj" />
   </ItemGroup>
 
 </Project>

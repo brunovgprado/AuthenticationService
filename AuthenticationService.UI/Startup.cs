@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AuthenticationService.Application.Service;
+﻿using AuthenticationService.Application.Service;
+using AuthenticationService.Data.Repository;
+using AuthenticationService.Domain.Interfaces.Repositories;
 using AuthenticationService.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace AuthenticationService.UI
 {
@@ -27,6 +22,7 @@ namespace AuthenticationService.UI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             services.AddTransient<IUsuarioApplicationService, UsuarioApplicationService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

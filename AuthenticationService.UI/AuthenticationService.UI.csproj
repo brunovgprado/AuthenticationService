@@ -13,4 +13,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AuthenticationService.Application\AuthenticationService.Application.csproj" />
+    <ProjectReference Include="..\AuthenticationService.Data\AuthenticationService.Data.csproj" />
+    <ProjectReference Include="..\AuthenticationService.Domain\AuthenticationService.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
