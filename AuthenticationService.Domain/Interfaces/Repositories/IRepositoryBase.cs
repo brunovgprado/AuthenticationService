@@ -1,6 +1,6 @@
 ﻿namespace AuthenticationService.Domain.Interfaces.Repositories
 {
-    public interface IGenericRepository<T> where T : class
+    public interface IRepositoryBase<T> where T : class
     {
         T GetById(object id);
         void Add(T obj);

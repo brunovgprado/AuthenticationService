@@ -5,9 +5,7 @@ using System.Text;
 
 namespace AuthenticationService.Domain.Interfaces.Services
 {
-    public interface IUsuarioApplicationService
+    public interface IUsuarioService : IServiceBase<Usuario>
     {
-        Usuario Add(Usuario addUser);
-        Usuario Select(Guid userId);
     }
 }

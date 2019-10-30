@@ -9,9 +9,9 @@ namespace AuthenticationService.UI.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IUsuarioApplicationService _usuarioService;
+        private readonly IUsuarioService _usuarioService;
 
-        public AuthenticationController(IUsuarioApplicationService usuarioService)
+        public AuthenticationController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
         }

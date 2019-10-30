@@ -1,7 +1,8 @@
-﻿using AuthenticationService.Application.Service;
+﻿using AuthenticationService.Data.Context;
 using AuthenticationService.Data.Repository;
 using AuthenticationService.Domain.Interfaces.Repositories;
 using AuthenticationService.Domain.Interfaces.Services;
+using AuthenticationService.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,8 @@ namespace AuthenticationService.UI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IUsuarioRepository, UsuarioRepository>();
-            services.AddTransient<IUsuarioApplicationService, UsuarioApplicationService>();
+            services.AddTransient<IUsuarioService, UsuarioService>();
+            services.AddDbContext<AuthenticationContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

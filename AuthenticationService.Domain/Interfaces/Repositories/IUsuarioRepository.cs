@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AuthenticationService.Domain.Interfaces.Repositories
 {
-    public interface IUsuarioRepository : IGenericRepository<Usuario>
+    public interface IUsuarioRepository : IRepositoryBase<Usuario>
     {
     }
 }

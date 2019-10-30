@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AuthenticationService.Data.Repository
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         public void Add(T obj)
         {

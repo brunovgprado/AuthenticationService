@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AuthenticationService.Data.Repository
 {
-    public class UsuarioRepository : GenericRepository<Usuario>, IUsuarioRepository
+    public class UsuarioRepository : RepositoryBase<Usuario>, IUsuarioRepository
     {
     }
 }

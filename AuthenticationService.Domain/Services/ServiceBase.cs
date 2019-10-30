@@ -1,18 +1,19 @@
 ﻿using AuthenticationService.Domain.Interfaces.Services;
 using AuthenticationService.Domain.Models;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace AuthenticationService.Application.Service
+namespace AuthenticationService.Domain.Services
 {
-
-    public class UsuarioApplicationService : IUsuarioApplicationService
+    public class ServiceBase<T> : IServiceBase<T> where T : class
     {
-        public Usuario Add(Usuario addUser)
+        public T Add(T entity)
         {
             throw new NotImplementedException();
         }
 
-        public Usuario Select(Guid userId)
+        public T Select(object id)
         {
             throw new NotImplementedException();
         }
