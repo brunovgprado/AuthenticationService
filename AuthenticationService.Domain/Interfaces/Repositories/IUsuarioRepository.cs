@@ -7,5 +7,6 @@ namespace AuthenticationService.Domain.Interfaces.Repositories
 {
     public interface IUsuarioRepository : IRepositoryBase<Usuario>
     {
+        Usuario GetUsuarioByEmail(string email);
     }
 }

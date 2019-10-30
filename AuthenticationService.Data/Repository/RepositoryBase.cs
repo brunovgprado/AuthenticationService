@@ -1,29 +1,39 @@
-﻿using AuthenticationService.Domain.Interfaces.Repositories;
+﻿using AuthenticationService.Data.Context;
+using AuthenticationService.Domain.Interfaces.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AuthenticationService.Data.Repository
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        public void Add(T obj)
+        protected readonly AuthenticationContext dbContext;
+
+        public RepositoryBase(AuthenticationContext dbContext)
         {
-            throw new NotImplementedException();
+            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        }
+
+        public T Add(T obj)
+        {
+            dbContext.Set<T>().Add(obj);
+            dbContext.SaveChanges();
+
+            return obj;
         }
 
         public T GetById(object id)
         {
-            throw new NotImplementedException();
+            return dbContext.Set<T>().Find(id);
         }
 
         public void Delete(T obj)
-        {
-            throw new NotImplementedException();
+        {            
+            dbContext.Set<T>().Remove(obj);
         }
         public void Update(T obj)
         {
-            throw new NotImplementedException();
+            dbContext.Set<T>().Update(obj);
+            dbContext.SaveChanges();
         }
     }
 }

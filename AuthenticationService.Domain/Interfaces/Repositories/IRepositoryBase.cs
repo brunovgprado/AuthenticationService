@@ -3,7 +3,7 @@
     public interface IRepositoryBase<T> where T : class
     {
         T GetById(object id);
-        void Add(T obj);
+        T Add(T obj);
         void Delete(T obj);
         void Update(T obj);
     }
