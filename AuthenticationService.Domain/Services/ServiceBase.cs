@@ -23,6 +23,6 @@ namespace AuthenticationService.Domain.Services
         public T Select(object id)
         {
            return  _repository.GetById(id);
-        }
+        }        
     }
 }

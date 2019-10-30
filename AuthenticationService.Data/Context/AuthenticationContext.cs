@@ -9,7 +9,8 @@ namespace AuthenticationService.Data.Context
     public class AuthenticationContext : DbContext
     {
         #region constants
-        private const string _USUARIO_TABLE_NAME = "Usuarios";
+        private const string USUARIO_TABLE_NAME = "Usuarios";
+        private const string TELEFONE_TABLE_NAME = "Telefones";
         #endregion
 
         #region configurations
@@ -20,11 +21,33 @@ namespace AuthenticationService.Data.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Usuario>().HasKey(u => u.Id);
-            modelBuilder.Entity<Usuario>()
-                .HasMany(u => u.Telefones)
-                .WithOne(t => t.User);
-            modelBuilder.Entity<Usuario>().ToTable<Usuario>(_USUARIO_TABLE_NAME);            
+            modelBuilder.Entity<Usuario>(us =>
+            {
+                us.HasKey(u => u.Id);
+
+                us.Property(u => u.DataCriacao).HasColumnName("data_criacao");
+                us.Property(u => u.UltimoLogin).HasColumnName("ultimo_logon");
+                us.Property(u => u.DataAtualizacao).HasColumnName("data_atualizacao");
+
+                us.Property(u => u.Id).HasColumnType("nvarchar(50)");
+                us.Property(u => u.Nome).HasColumnType("varchar(50)");
+                us.Property(u => u.Email).HasColumnType("varchar(50)");
+                us.Property(u => u.Senha).HasColumnType("varchar(100)");
+                us.HasMany(u => u.Telefones).WithOne(t => t.User);
+                us.ToTable<Usuario>(USUARIO_TABLE_NAME);            
+            });
+
+            modelBuilder.Entity<Telefone>(us =>
+            {
+                us.HasKey(t => t.Id);
+                
+                us.HasOne(t => t.User)
+                .WithMany(u => u.Telefones)
+                .HasForeignKey(t => t.UsuarioFK);
+
+                us.ToTable<Telefone>(TELEFONE_TABLE_NAME);            
+            });
+
         }
         #endregion
 
