@@ -33,12 +33,8 @@ namespace AuthenticationService.UI
             services.AddScoped(typeof(IServiceBase<>), typeof(ServiceBase<>));
             services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             services.AddTransient<IUsuarioService, UsuarioService>();
-<<<<<<< HEAD
             services.AddTransient<TokenGeneratioService>();
             services.AddTransient<UsuarioValidator>();
-=======
-            services.AddSingleton<UsuarioValidator>();
->>>>>>> 322776331cf0cb2d24071b2b41c3dd3e6553d300
             services.AddDbContext<AuthenticationContext>();
             services.AddMvc(config => {
                 config.ReturnHttpNotAcceptable = true;
