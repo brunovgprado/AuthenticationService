@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AuthenticationService.UI.ViewModel
 {
-    public class CredentialsModel
+    public class CredentialsDto
     {
         public string email { get; set; }
         public string senha { get; set; }

@@ -15,5 +15,11 @@ namespace AuthenticationService.Domain.Services
         {
             return GetByEmail(email);
         }
+
+        public Usuario PrepareEntityToSave(Usuario usuario){
+            usuario.DataCriacao = DateTime.Now;
+            usuario.UltimoLogin = DateTime.Now;
+            return usuario;
+        }
     }
 }
