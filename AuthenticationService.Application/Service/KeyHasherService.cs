@@ -20,28 +20,28 @@ namespace AuthenticationService.Application.Service
             var encryptedPassword = _algorithm.ComputeHash(encodedValue);
 
             var sb = new StringBuilder();
-            foreach (var caracter in encryptedPassword)
-            {
-                sb.Append(caracter.ToString("X2"));
-            }
-
-            return sb.ToString();
-        }
-
-        public bool VerifyPassword(string password, string persistedPassword)
-        {
-            if (string.IsNullOrEmpty(persistedPassword))
-                throw new ArgumentNullException();
-
-            var encryptedPassword = _algorithm.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-            var sb = new StringBuilder();
             foreach (var character in encryptedPassword)
             {
                 sb.Append(character.ToString("X2"));
             }
 
-            return sb.ToString() == persistedPassword;
+            return sb.ToString();
+        }
+
+        public bool VerifyKey(string key, string persistedKey)
+        {
+            if (string.IsNullOrEmpty(persistedKey))
+                throw new ArgumentNullException();
+
+            var encryptedKey = _algorithm.ComputeHash(Encoding.UTF8.GetBytes(key));
+
+            var sb = new StringBuilder();
+            foreach (var character in encryptedKey)
+            {
+                sb.Append(character.ToString("X2"));
+            }
+
+            return sb.ToString() == persistedKey;
         }
     }
 }

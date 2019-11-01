@@ -7,6 +7,8 @@ namespace AuthenticationService.Domain.Interfaces.Services
 {
     public interface IUsuarioService : IServiceBase<Usuario>
     {
-        Usuario PrepareEntityToSave(Usuario usuario);
+        Usuario PrepareEntityToSaveOrUpdate(Usuario usuario, bool isUpdate);
+        Usuario GetByEmail(string email);
     }
+
 }

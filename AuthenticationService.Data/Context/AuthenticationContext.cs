@@ -16,7 +16,7 @@ namespace AuthenticationService.Data.Context
         #region configurations
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=tcp:pradoserver.database.windows.net,1433;Initial Catalog=pradoDataBase;Persist Security Info=False;User ID=bruno.prado;Password=9933@pipo;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            optionsBuilder.UseSqlServer("");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

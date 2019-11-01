@@ -8,17 +8,24 @@ namespace AuthenticationService.Domain.Services
 
     public class UsuarioService : ServiceBase<Usuario>, IUsuarioService
     {
-        public UsuarioService(IRepositoryBase<Usuario> repository) : base(repository)
+        private readonly IUsuarioRepository _repository = null;
+        public UsuarioService(IUsuarioRepository repository) : base(repository)
         {
-        }
-        public Usuario GetByEmail(string email)
-        {
-            return GetByEmail(email);
+            _repository = repository;
         }
 
-        public Usuario PrepareEntityToSave(Usuario usuario){
-            usuario.DataCriacao = DateTime.Now;
+        public Usuario GetByEmail(string email)
+        {
+            return _repository.GetUsuarioByEmail(email);
+        }
+
+        public Usuario PrepareEntityToSaveOrUpdate(Usuario usuario, bool isUpdate){            
+            
             usuario.UltimoLogin = DateTime.Now;
+
+            if(!isUpdate)
+                usuario.DataCriacao = DateTime.Now;
+
             return usuario;
         }
     }

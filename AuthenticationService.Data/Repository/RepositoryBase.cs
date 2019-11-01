@@ -6,7 +6,7 @@ namespace AuthenticationService.Data.Repository
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        protected readonly AuthenticationContext dbContext;
+        protected readonly AuthenticationContext dbContext = null;
 
         public RepositoryBase(AuthenticationContext dbContext)
         {

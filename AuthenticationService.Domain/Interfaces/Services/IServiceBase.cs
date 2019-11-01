@@ -8,5 +8,6 @@ namespace AuthenticationService.Domain.Interfaces.Services
     {
         T Add(T entity);
         T Select(object id);
+        void Update(T entity);
     }
 }

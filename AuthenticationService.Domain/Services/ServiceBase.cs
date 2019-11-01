@@ -9,7 +9,7 @@ namespace AuthenticationService.Domain.Services
 {
     public class ServiceBase<T> : IServiceBase<T> where T : class
     {
-        protected readonly IRepositoryBase<T> _repository;
+        protected readonly IRepositoryBase<T> _repository = null;
 
         public ServiceBase(IRepositoryBase<T> repository)
         {
@@ -23,6 +23,10 @@ namespace AuthenticationService.Domain.Services
         public T Select(object id)
         {
            return  _repository.GetById(id);
+        }
+
+        public void Update(T entity){
+            _repository.Update(entity);
         }        
     }
 }
