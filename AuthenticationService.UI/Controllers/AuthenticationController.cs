@@ -61,15 +61,22 @@ namespace AuthenticationService.UI.Controllers
                         tokenConfigurations);
 
                     //Transforma a senha informada em um hash
-                    usuario.Senha = _keyHasherService.EncriptPassword(usuario.Senha);
+                    usuario.Senha = _keyHasherService.EncriptKey(usuario.Senha);
 
-                    //Transforma o token em um hash
-                    usuario.Token = _keyHasherService.EncriptPassword(usuario.Token);
+                    //Guarda o token original e transforma o token da entidade em um hash para persistir
+                    var token = usuario.Token;
+                    usuario.Token = _keyHasherService.EncriptKey(usuario.Token);
 
                     //Atribui data de criação e ultimo logon (DateTime.Now)     
                     var preparedUser = _usuarioService.PrepareEntityToSave(usuario);
 
                     _usuarioService.Add(usuario);
+
+                    //Limpa a senha para retornar a entidade ao cliente
+                    usuario.Senha = String.Empty;
+
+                    //Devolve o token original para retornar a entidade ao cliente
+                    usuario.Token = token;
 
                     return new JsonResult(usuario);
                 }catch(Exception e)

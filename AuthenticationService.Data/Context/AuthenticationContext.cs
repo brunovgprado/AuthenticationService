@@ -16,7 +16,7 @@ namespace AuthenticationService.Data.Context
         #region configurations
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("");
+            optionsBuilder.UseSqlServer("Data Source=tcp:pradoserver.database.windows.net,1433;Initial Catalog=pradoDataBase;Persist Security Info=False;User ID=bruno.prado;Password=9933@pipo;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -32,7 +32,8 @@ namespace AuthenticationService.Data.Context
                 us.Property(u => u.Id).HasColumnType("nvarchar(50)");
                 us.Property(u => u.Nome).HasColumnType("varchar(50)");
                 us.Property(u => u.Email).HasColumnType("varchar(50)");
-                us.Property(u => u.Senha).HasColumnType("varchar(100)");
+                us.Property(u => u.Senha).HasColumnType("varchar(140)");
+                us.Property(u => u.Token).HasColumnType("varchar(140)");
                 us.HasMany(u => u.Telefones).WithOne(t => t.User);
                 us.ToTable<Usuario>(USUARIO_TABLE_NAME);            
             });

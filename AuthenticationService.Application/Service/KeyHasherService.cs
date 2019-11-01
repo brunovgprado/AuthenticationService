@@ -14,7 +14,7 @@ namespace AuthenticationService.Application.Service
             _algorithm = algorithm;
         }
 
-        public string EncriptPassword(string password)
+        public string EncriptKey(string password)
         {
             var encodedValue = Encoding.UTF8.GetBytes(password);
             var encryptedPassword = _algorithm.ComputeHash(encodedValue);
