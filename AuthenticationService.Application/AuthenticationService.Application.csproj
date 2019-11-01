@@ -8,8 +8,4 @@
     <ProjectReference Include="..\AuthenticationService.Domain\AuthenticationService.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Service\" />
-  </ItemGroup>
-
 </Project>
