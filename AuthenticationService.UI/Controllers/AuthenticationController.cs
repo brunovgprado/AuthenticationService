@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using AuthenticationService.Application.Service;
 using AuthenticationService.Domain.Interfaces.Services;
 using AuthenticationService.Domain.Models;
 using AuthenticationService.Domain.Services;
@@ -21,19 +22,23 @@ namespace AuthenticationService.UI.Controllers
         #endregion
 
         #region attributes
-        private readonly TokenGeneratioService _tokenGenerator;
+        private readonly TokenGenerationService _tokenGenerator;
         private readonly UsuarioValidator _validator;
         private readonly IUsuarioService _usuarioService;
+        private readonly KeyHasherService _keyHasherService;
+
         #endregion 
 
         public AuthenticationController(
             IUsuarioService usuarioService, 
             UsuarioValidator validator, 
-            TokenGeneratioService tokenGenerator)
+            TokenGenerationService tokenGenerator,
+            KeyHasherService keyHasherService)
         {
             _usuarioService = usuarioService;
             _validator = validator;
             _tokenGenerator = tokenGenerator;
+            _keyHasherService = keyHasherService;
         }
 
         [AllowAnonymous]
@@ -54,6 +59,12 @@ namespace AuthenticationService.UI.Controllers
                         usuario, 
                         signingConfigurations, 
                         tokenConfigurations);
+
+                    //Transforma a senha informada em um hash
+                    usuario.Senha = _keyHasherService.EncriptPassword(usuario.Senha);
+
+                    //Transforma o token em um hash
+                    usuario.Token = _keyHasherService.EncriptPassword(usuario.Token);
 
                     //Atribui data de criação e ultimo logon (DateTime.Now)     
                     var preparedUser = _usuarioService.PrepareEntityToSave(usuario);

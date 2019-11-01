@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AuthenticationService.UI.Services
 {
-    public class TokenGeneratioService
+    public class TokenGenerationService
     {
         public string GenerateToken(
             Usuario usuario, 
@@ -16,7 +16,6 @@ namespace AuthenticationService.UI.Services
             TokenConfigurations tokenConfigurations
         )
         {
-
                 
             ClaimsIdentity identity = new ClaimsIdentity(
                 new GenericIdentity(usuario.Email),

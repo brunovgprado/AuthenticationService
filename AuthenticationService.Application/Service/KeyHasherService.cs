@@ -6,19 +6,18 @@ using System.Text;
 namespace AuthenticationService.Application.Service
 {
     public class KeyHasherService
-    {
-        private HashAlgorithm _algoritmo;
+    {        
+        private HashAlgorithm _algorithm;
 
-        public KeyHasherService(HashAlgorithm algoritmo)
-
-               {
-            _algoritmo = algoritmo;
+        public KeyHasherService(HashAlgorithm algorithm)
+        {
+            _algorithm = algorithm;
         }
 
-        public string CriptografarSenha(string senha)
+        public string EncriptPassword(string password)
         {
-            var encodedValue = Encoding.UTF8.GetBytes(senha);
-            var encryptedPassword = _algoritmo.ComputeHash(encodedValue);
+            var encodedValue = Encoding.UTF8.GetBytes(password);
+            var encryptedPassword = _algorithm.ComputeHash(encodedValue);
 
             var sb = new StringBuilder();
             foreach (var caracter in encryptedPassword)
@@ -29,20 +28,20 @@ namespace AuthenticationService.Application.Service
             return sb.ToString();
         }
 
-        public bool VerificarSenha(string senhaDigitada, string senhaCadastrada)
+        public bool VerifyPassword(string password, string persistedPassword)
         {
-            if (string.IsNullOrEmpty(senhaCadastrada))
-                throw new NullReferenceException("Cadastre uma senha.");
+            if (string.IsNullOrEmpty(persistedPassword))
+                throw new ArgumentNullException();
 
-            var encryptedPassword = _algoritmo.ComputeHash(Encoding.UTF8.GetBytes(senhaDigitada));
+            var encryptedPassword = _algorithm.ComputeHash(Encoding.UTF8.GetBytes(password));
 
             var sb = new StringBuilder();
-            foreach (var caractere in encryptedPassword)
+            foreach (var character in encryptedPassword)
             {
-                sb.Append(caractere.ToString("X2"));
+                sb.Append(character.ToString("X2"));
             }
 
-            return sb.ToString() == senhaCadastrada;
+            return sb.ToString() == persistedPassword;
         }
     }
 }

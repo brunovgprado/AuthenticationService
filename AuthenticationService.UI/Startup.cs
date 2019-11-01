@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Cryptography;
+using AuthenticationService.Application.Service;
 using AuthenticationService.Data.Context;
 using AuthenticationService.Data.Repository;
 using AuthenticationService.Domain.Interfaces.Repositories;
@@ -33,12 +35,15 @@ namespace AuthenticationService.UI
             services.AddScoped(typeof(IServiceBase<>), typeof(ServiceBase<>));
             services.AddTransient<IUsuarioRepository, UsuarioRepository>();
             services.AddTransient<IUsuarioService, UsuarioService>();
-            services.AddTransient<TokenGeneratioService>();
+            services.AddTransient<TokenGenerationService>();
             services.AddTransient<UsuarioValidator>();
             services.AddDbContext<AuthenticationContext>();
             services.AddMvc(config => {
                 config.ReturnHttpNotAcceptable = true;
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            
+            var keyHasherService = new KeyHasherService(SHA512.Create());
+            services.AddSingleton(keyHasherService);
 
             #region JWT configurations
 
