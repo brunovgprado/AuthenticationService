@@ -8,4 +8,8 @@
     <ProjectReference Include="..\AuthenticationService.Domain\AuthenticationService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AppModel\ViewModels\" />
+  </ItemGroup>
+
 </Project>

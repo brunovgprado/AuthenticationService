@@ -1,5 +1,6 @@
 ﻿using AuthenticationService.Data.Context;
 using AuthenticationService.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 
 namespace AuthenticationService.Data.Repository
@@ -16,7 +17,7 @@ namespace AuthenticationService.Data.Repository
         public T Add(T obj)
         {
             dbContext.Set<T>().Add(obj);
-            dbContext.SaveChanges();
+            SaveChanges();
 
             return obj;
         }
@@ -33,7 +34,19 @@ namespace AuthenticationService.Data.Repository
         public void Update(T obj)
         {
             dbContext.Set<T>().Update(obj);
-            dbContext.SaveChanges();
+            SaveChanges();
+        }
+
+        public void SaveChanges()
+        {
+            try
+            {
+                dbContext.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

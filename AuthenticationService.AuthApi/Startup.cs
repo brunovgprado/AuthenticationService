@@ -1,29 +1,37 @@
 ﻿using System;
 using System.Security.Cryptography;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
 using AuthenticationService.Application.Service;
 using AuthenticationService.Data.Context;
 using AuthenticationService.Data.Repository;
 using AuthenticationService.Domain.Interfaces.Repositories;
 using AuthenticationService.Domain.Interfaces.Services;
 using AuthenticationService.Domain.Services;
-using AuthenticationService.UI.Configuration;
-using AuthenticationService.UI.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using AuthenticationService.AuthApi.ConfigurationsApi;
+using AuthenticationService.AuthApi.Services;
 
-namespace AuthenticationService.UI
+namespace AuthenticationService.AuthApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+/*         public IHostingEnvironment HostingEnvironment { get; private set; }
+        public IConfiguration Configuration { get; private set; } */
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
-            Configuration = configuration;
+            // this.HostingEnvironment = env;
+            this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -50,27 +58,25 @@ namespace AuthenticationService.UI
             var signingConfigurations = new SigningConfigurations();
             services.AddSingleton(signingConfigurations);
 
-            var tokenConfigurations = new TokenConfigurations();
-            new ConfigureFromConfigurationOptions<TokenConfigurations>(
-                Configuration.GetSection("TokenConfigurations"))
-                    .Configure(tokenConfigurations);
-            services.AddSingleton(tokenConfigurations);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {                        
 
+                        ValidateIssuer = true,
+                        ValidIssuer = Configuration["TokenConfigurations:Issuer"],
 
-            services.AddAuthentication(authOptions =>
-            {
-                authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(bearerOptions =>
-            {
-                var paramsValidation = bearerOptions.TokenValidationParameters;
-                paramsValidation.IssuerSigningKey = signingConfigurations.Key;
-                paramsValidation.ValidAudience = tokenConfigurations.Audience;
-                paramsValidation.ValidIssuer = tokenConfigurations.Issuer;
-                paramsValidation.ValidateIssuerSigningKey = true;
-                paramsValidation.ValidateLifetime = true;
-                paramsValidation.ClockSkew = TimeSpan.Zero;
-            });
+                        ValidateAudience = true,
+                        ValidAudience = Configuration["TokenConfigurations:Audience"],
+
+                        ValidateIssuerSigningKey = true,                        
+
+                        RequireExpirationTime = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
 
             services.AddAuthorization(auth =>
             {
@@ -78,7 +84,6 @@ namespace AuthenticationService.UI
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser().Build());
             });
-
             #endregion
         }
 
@@ -93,7 +98,7 @@ namespace AuthenticationService.UI
             {
                 app.UseHsts();
             }
-
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

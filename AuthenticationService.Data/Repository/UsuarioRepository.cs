@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationService.Data.Repository
 {
@@ -16,7 +17,8 @@ namespace AuthenticationService.Data.Repository
 
         public Usuario GetUsuarioByEmail(string email)
         {
-           return dbContext.Usuarios.Where(u => u.Email == email).FirstOrDefault();
+           return dbContext.Usuarios.Where(u => u.Email == email)
+                .Include(u => u.Telefones).Single();
         }
     }
 }

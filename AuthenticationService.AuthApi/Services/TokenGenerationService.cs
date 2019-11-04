@@ -3,18 +3,18 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
 using AuthenticationService.Domain.Models;
-using AuthenticationService.UI.Configuration;
+using AuthenticationService.AuthApi.ConfigurationsApi;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 
-namespace AuthenticationService.UI.Services
+namespace AuthenticationService.AuthApi.Services
 {
     public class TokenGenerationService
     {
         public string GenerateToken(
             Usuario usuario, 
-            SigningConfigurations signingConfigurations, 
-            TokenConfigurations tokenConfigurations
-        )
+            SigningConfigurations signingConfigurations,
+            IConfiguration config)
         {
                 
             ClaimsIdentity identity = new ClaimsIdentity(
@@ -27,13 +27,13 @@ namespace AuthenticationService.UI.Services
 
             DateTime dataCriacao = DateTime.Now;
             DateTime dataExpiracao = dataCriacao +
-                TimeSpan.FromSeconds(tokenConfigurations.Seconds);
+                TimeSpan.FromSeconds(1800);
 
             var handler = new JwtSecurityTokenHandler();
             var securityToken = handler.CreateToken(new SecurityTokenDescriptor
             {
-                Issuer = tokenConfigurations.Issuer,
-                Audience = tokenConfigurations.Audience,
+                Issuer = config["TokenConfigurations:Issuer"],
+                Audience = config["TokenConfigurations:Audience"],
                 SigningCredentials = signingConfigurations.SigningCredentials,
                 Subject = identity,
                 NotBefore = dataCriacao,

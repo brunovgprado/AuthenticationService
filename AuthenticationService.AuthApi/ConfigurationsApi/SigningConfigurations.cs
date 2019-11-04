@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AuthenticationService.UI.Configuration
+namespace AuthenticationService.AuthApi.ConfigurationsApi
 {
     public class SigningConfigurations
     {
