@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using AuthenticationService.Domain.Models;
 
-namespace AuthenticationService.UI.ViewModel
+namespace AuthenticationService.Application.AppModel.Dtos
 {
     public class UsuarioDto
     {

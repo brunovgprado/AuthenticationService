@@ -8,7 +8,7 @@ namespace AuthenticationService.Domain.Services
 
     public class UsuarioService : ServiceBase<Usuario>, IUsuarioService
     {
-        private readonly IUsuarioRepository _repository = null;
+        private readonly IUsuarioRepository _repository;
         public UsuarioService(IUsuarioRepository repository) : base(repository)
         {
             _repository = repository;

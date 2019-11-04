@@ -1,4 +1,5 @@
-﻿using AuthenticationService.Domain.Models;
+﻿using AuthenticationService.Data.Properties;
+using AuthenticationService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace AuthenticationService.Data.Context
         #region configurations
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("");
+            optionsBuilder.UseSqlServer(Resources.DbConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,10 +29,9 @@ namespace AuthenticationService.Data.Context
                 us.Property(u => u.DataCriacao).HasColumnName("data_criacao");
                 us.Property(u => u.UltimoLogin).HasColumnName("ultimo_logon");
                 us.Property(u => u.DataAtualizacao).HasColumnName("data_atualizacao");
-
                 us.Property(u => u.Id).HasColumnType("nvarchar(50)");
                 us.Property(u => u.Nome).HasColumnType("varchar(50)");
-                us.Property(u => u.Email).HasColumnType("varchar(50)");
+                us.Property(u => u.Email).IsUnicode().HasColumnType("varchar(50)");
                 us.Property(u => u.Senha).HasColumnType("varchar(140)");
                 us.Property(u => u.Token).HasColumnType("varchar(140)");
                 us.HasMany(u => u.Telefones).WithOne(t => t.User);
@@ -46,6 +46,7 @@ namespace AuthenticationService.Data.Context
                 .WithMany(u => u.Telefones)
                 .HasForeignKey(t => t.UsuarioFK);
 
+                us.Property(t => t.UsuarioFK).HasColumnName("usuario_id");
                 us.ToTable<Telefone>(TELEFONE_TABLE_NAME);            
             });
 

@@ -1,4 +1,4 @@
-namespace AuthenticationService.UI.Configuration
+namespace AuthenticationService.AuthApi.ConfigurationsApi
 {
     public class TokenConfigurations
     {

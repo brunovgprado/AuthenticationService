@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AuthenticationService.UI.ViewModel
+namespace AuthenticationService.Application.AppModel.Dtos
 {
     public class CredentialsDto
     {

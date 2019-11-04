@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+
 using AuthenticationService.Application.Service;
 using AuthenticationService.Domain.Interfaces.Services;
 using AuthenticationService.Domain.Models;
 using AuthenticationService.Domain.Services;
-using AuthenticationService.UI.Configuration;
-using AuthenticationService.UI.Exceptions;
-using AuthenticationService.UI.Services;
-using AuthenticationService.UI.ViewModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using AuthenticationService.AuthApi.ConfigurationsApi;
+using AuthenticationService.AuthApi.Exceptions;
+using AuthenticationService.AuthApi.Services;
+using AuthenticationService.Application.AppModel.Dtos;
 
-namespace AuthenticationService.UI.Controllers
+namespace AuthenticationService.AuthApi.Controllers
 {
     [Route("api/Authentication")]
     [ApiController]
@@ -28,10 +31,11 @@ namespace AuthenticationService.UI.Controllers
         #endregion
 
         #region attributes
-        private readonly TokenGenerationService _tokenGenerator = null;
-        private readonly UsuarioValidator _validator = null;
-        private readonly IUsuarioService _usuarioService = null;
-        private readonly KeyHasherService _keyHasherService = null;
+        private readonly TokenGenerationService _tokenGenerator;
+        private readonly UsuarioValidator _validator;
+        private readonly IUsuarioService _usuarioService;
+        private readonly KeyHasherService _keyHasherService;
+        private readonly IConfiguration _config;
 
         #endregion 
 
@@ -39,12 +43,14 @@ namespace AuthenticationService.UI.Controllers
             IUsuarioService usuarioService, 
             UsuarioValidator validator, 
             TokenGenerationService tokenGenerator,
-            KeyHasherService keyHasherService)
+            KeyHasherService keyHasherService,
+            IConfiguration config)
         {
             _usuarioService = usuarioService;
             _validator = validator;
             _tokenGenerator = tokenGenerator;
             _keyHasherService = keyHasherService;
+            _config = config;
         }
 
         [AllowAnonymous]
@@ -52,8 +58,7 @@ namespace AuthenticationService.UI.Controllers
         [Route("SignUp")]
         public JsonResult SignUp(
             [FromBody] UsuarioDto usuarioRequisicao,
-            [FromServices]SigningConfigurations signingConfigurations,
-            [FromServices]TokenConfigurations tokenConfigurations)
+            [FromServices]SigningConfigurations signingConfigurations)
         {
             
             try{
@@ -64,8 +69,7 @@ namespace AuthenticationService.UI.Controllers
                         //Atribui token
                         usuario.Token = GenerateToken(
                             usuario, 
-                            signingConfigurations, 
-                            tokenConfigurations);
+                            signingConfigurations);
 
                         //Transforma a senha informada em um hash
                         usuario.Senha = _keyHasherService.EncriptKey(usuario.Senha);
@@ -75,8 +79,7 @@ namespace AuthenticationService.UI.Controllers
                         usuario.Token = _keyHasherService.EncriptKey(usuario.Token);
 
                         //Atribui data de criação e ultimo logon (DateTime.Now)     
-                        var preparedUser = _usuarioService
-                        .PrepareEntityToSaveOrUpdate(usuario, _IS_NOT_UPDATE);
+                        _usuarioService.PrepareEntityToSaveOrUpdate(usuario, _IS_NOT_UPDATE);
 
                         _usuarioService.Add(usuario);
 
@@ -95,7 +98,7 @@ namespace AuthenticationService.UI.Controllers
                 return new JsonResult(GetResponseErrorObj(
                     e.Message, (int)HttpStatusCode.BadRequest));
             }
-            catch(Exception e)
+            catch
             {
                 return new JsonResult(GetResponseErrorObj(
                     _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));
@@ -107,14 +110,13 @@ namespace AuthenticationService.UI.Controllers
         [HttpPost]
         [Route("Login")]
         public JsonResult Login([FromBody] CredentialsDto credentials,
-            [FromServices]SigningConfigurations signingConfigurations,
-            [FromServices]TokenConfigurations tokenConfigurations)
+            [FromServices]SigningConfigurations signingConfigurations)
         {
             var passwordIsValid = false;
-            Usuario user = null;
+            Usuario user;
             try{
                 user = _usuarioService.GetByEmail(credentials.email);
-            }catch(Exception e){
+            }catch{
                 return new JsonResult(GetResponseErrorObj(
                     _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));                    
             }
@@ -131,8 +133,7 @@ namespace AuthenticationService.UI.Controllers
                 //Atribui token
                 user.Token = GenerateToken(
                     user, 
-                    signingConfigurations, 
-                    tokenConfigurations);
+                    signingConfigurations);
 
                 //Guarda o token original e transforma o token da entidade em um hash para persistir
                 var clientToken = user.Token;
@@ -143,8 +144,8 @@ namespace AuthenticationService.UI.Controllers
                     .PrepareEntityToSaveOrUpdate(user, _IS_UPDATE);
 
                 try{
-                    _usuarioService.Update(user);
-                }catch(Exception e){
+                    _usuarioService.Update(preparedUser);
+                }catch{
                     return new JsonResult(GetResponseErrorObj(
                         _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));                    
                 }
@@ -158,13 +159,13 @@ namespace AuthenticationService.UI.Controllers
             return new JsonResult(user);
         }
 
-        [Authorize("Bearer")]
+        
         [HttpPost("{id}")]
         [Route("Profile")]
         public JsonResult Profile([FromQuery]string id, [FromHeader] string Bearer)
         {
-            Usuario usuario = null;
-            bool tokenIsValid = false;
+            Usuario usuario;
+            bool tokenIsValid;
 
             if(String.IsNullOrEmpty(Bearer)){
                 return new JsonResult(GetResponseErrorObj(
@@ -175,7 +176,6 @@ namespace AuthenticationService.UI.Controllers
                 return new JsonResult(GetResponseErrorObj(
                     _FORBIDDEN, (int)HttpStatusCode.Unauthorized));
             } 
-
 
             try{
                 var internalId = Guid.Parse(id);
@@ -216,13 +216,15 @@ namespace AuthenticationService.UI.Controllers
         {
             //==> SUBSTITUIR PELO USO DE AUTOMAPER===
             if(usuarioRequisicao != null){
-                var usuario = new Usuario();
-                usuario.Id = usuarioRequisicao.id;
-                usuario.Nome = usuarioRequisicao.nome;
-                usuario.Email = usuarioRequisicao.email;
-                usuario.Senha = usuarioRequisicao.senha;
+                var usuario = new Usuario
+                {
+                    Nome = usuarioRequisicao.nome,
+                    Email = usuarioRequisicao.email,
+                    Senha = usuarioRequisicao.senha
+                };
 
-                if(usuarioRequisicao.telefones != null){
+                if (usuarioRequisicao.telefones != null){
+                    usuario.Telefones = new List<Telefone>();
                     usuario.Telefones.AddRange(usuarioRequisicao.telefones);
                 }
                 return usuario;            
@@ -242,10 +244,9 @@ namespace AuthenticationService.UI.Controllers
 
         private string GenerateToken(
             Usuario usuario, 
-            SigningConfigurations signingConfigurations, 
-            TokenConfigurations tokenConfigurations)
+            SigningConfigurations signingConfigurations)
         {            
-            return _tokenGenerator.GenerateToken(usuario, signingConfigurations, tokenConfigurations);
+            return _tokenGenerator.GenerateToken(usuario, signingConfigurations, _config);
         }
         
     }

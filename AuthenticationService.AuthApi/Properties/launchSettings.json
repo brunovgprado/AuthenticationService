@@ -12,14 +12,14 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/",
       "environmentVariables": {
         "ASPNETCORE_URLS": "http://localhost:49912",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "nativeDebugging": false
     },
-    "AuthenticationService.UI": {
+    "AuthenticationService.AuthApi": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/values",

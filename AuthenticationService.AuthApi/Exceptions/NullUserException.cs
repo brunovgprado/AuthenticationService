@@ -1,6 +1,6 @@
 using System;
 
-namespace AuthenticationService.UI.Exceptions
+namespace AuthenticationService.AuthApi.Exceptions
 {
     public class NullUserException : Exception
     {

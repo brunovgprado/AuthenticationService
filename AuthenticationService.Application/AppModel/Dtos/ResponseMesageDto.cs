@@ -1,4 +1,4 @@
-namespace AuthenticationService.UI.ViewModel
+namespace AuthenticationService.Application.AppModel.Dtos
 {
     public class ResponseMesageViewDto
     {
