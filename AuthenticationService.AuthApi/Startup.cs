@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 
 using AuthenticationService.Application.Service;
 using AuthenticationService.Data.Context;
@@ -46,12 +47,19 @@ namespace AuthenticationService.AuthApi
             services.AddTransient<TokenGenerationService>();
             services.AddTransient<UsuarioValidator>();
             services.AddDbContext<AuthenticationContext>();
+            services.AddAutomapper();
+
             services.AddMvc(config => {
                 config.ReturnHttpNotAcceptable = true;
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             var keyHasherService = new KeyHasherService(SHA512.Create());
             services.AddSingleton(keyHasherService);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication Api", Version = "v1" });
+            });
 
             #region JWT configurations
 
@@ -98,6 +106,14 @@ namespace AuthenticationService.AuthApi
             {
                 app.UseHsts();
             }
+            
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Api v1");
+            });
+
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
