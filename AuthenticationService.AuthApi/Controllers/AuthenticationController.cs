@@ -56,7 +56,7 @@ namespace AuthenticationService.AuthApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("SignUp")]
-        public JsonResult SignUp(
+        protected JsonResult SignUp(
             [FromBody] UsuarioDto usuarioRequisicao,
             [FromServices]SigningConfigurations signingConfigurations)
         {
@@ -109,7 +109,7 @@ namespace AuthenticationService.AuthApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
-        public JsonResult Login([FromBody] CredentialsDto credentials,
+        protected JsonResult Login([FromBody] CredentialsDto credentials,
             [FromServices]SigningConfigurations signingConfigurations)
         {
             var passwordIsValid = false;
@@ -162,7 +162,7 @@ namespace AuthenticationService.AuthApi.Controllers
         
         [HttpPost("{id}")]
         [Route("Profile")]
-        public JsonResult Profile([FromQuery]string id, [FromHeader] string Bearer)
+        protected JsonResult Profile([FromQuery]string id, [FromHeader] string Bearer)
         {
             Usuario usuario;
             bool tokenIsValid;

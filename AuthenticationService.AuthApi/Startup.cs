@@ -7,11 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 using AuthenticationService.Application.Service;
 using AuthenticationService.Data.Context;
@@ -47,7 +45,7 @@ namespace AuthenticationService.AuthApi
             services.AddTransient<TokenGenerationService>();
             services.AddTransient<UsuarioValidator>();
             services.AddDbContext<AuthenticationContext>();
-            services.AddAutomapper();
+            //services.AddAutomapper();
 
             services.AddMvc(config => {
                 config.ReturnHttpNotAcceptable = true;
@@ -56,9 +54,29 @@ namespace AuthenticationService.AuthApi
             var keyHasherService = new KeyHasherService(SHA512.Create());
             services.AddSingleton(keyHasherService);
 
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication Api", Version = "v1" });
+                options.SwaggerDoc("v1", new Info()
+                {
+                    Title = "Authentication Api",
+                    Version = "v1",
+                    Contact = new Contact()
+                    {
+                        Name = "Bruno",
+                        Email = "brunomcp2010@gmail.com",
+                        Url = "https://github.com/brunovitorprado"
+                    }
+                });
+
+                options.AddSecurityDefinition(
+                    "Bearer",
+                    new ApiKeyScheme
+                    {
+                        In = "header",
+                        Description = "Autenticação baseada em Json Web Token (JWT)",
+                        Name = "Authorization",
+                        Type = "apiKey"
+                    });
             });
 
             #region JWT configurations
@@ -108,10 +126,10 @@ namespace AuthenticationService.AuthApi
             }
             
             app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(options =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Api v1");
+                options.RoutePrefix = "swagger";
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Api v1");
             });
 
             app.UseAuthentication();
