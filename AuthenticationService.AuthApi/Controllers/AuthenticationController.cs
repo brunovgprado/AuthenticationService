@@ -113,9 +113,17 @@ namespace AuthenticationService.AuthApi.Controllers
         {
             var passwordIsValid = false;
             Usuario user;
+
+            if(credentials == null){
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return new JsonResult(GetResponseErrorObj(
+                    _INVALID_MODEL_MESSAGE, (int)HttpStatusCode.BadRequest)); 
+            }
+
             try{
                 user = _usuarioService.GetByEmail(credentials.email);
             }catch{
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 return new JsonResult(GetResponseErrorObj(
                     _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));                    
             }
