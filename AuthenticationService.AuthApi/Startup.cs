@@ -19,6 +19,7 @@ using AuthenticationService.Domain.Interfaces.Services;
 using AuthenticationService.Domain.Services;
 using AuthenticationService.AuthApi.ConfigurationsApi;
 using AuthenticationService.AuthApi.Services;
+using Microsoft.OpenApi.Models;
 
 namespace AuthenticationService.AuthApi
 {
@@ -56,27 +57,18 @@ namespace AuthenticationService.AuthApi
 
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new Info()
+                options.SwaggerDoc("v1", new OpenApiInfo()
                 {
                     Title = "Authentication Api",
                     Version = "v1",
-                    Contact = new Contact()
+                    Contact = new OpenApiContact()
                     {
                         Name = "Bruno",
                         Email = "brunomcp2010@gmail.com",
-                        Url = "https://github.com/brunovitorprado"
-                    }
+                        Url = new Uri("https://github.com/brunovitorprado")
+                    },
+                                        
                 });
-
-                options.AddSecurityDefinition(
-                    "Bearer",
-                    new ApiKeyScheme
-                    {
-                        In = "header",
-                        Description = "Autenticação baseada em Json Web Token (JWT)",
-                        Name = "Authorization",
-                        Type = "apiKey"
-                    });
             });
 
             #region JWT configurations

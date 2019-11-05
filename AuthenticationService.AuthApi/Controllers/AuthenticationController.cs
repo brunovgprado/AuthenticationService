@@ -104,8 +104,7 @@ namespace AuthenticationService.AuthApi.Controllers
                     _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));
             }
         }
-
-
+        
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
