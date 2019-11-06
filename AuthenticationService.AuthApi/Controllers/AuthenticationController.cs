@@ -56,7 +56,7 @@ namespace AuthenticationService.AuthApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("SignUp")]
-        protected JsonResult SignUp(
+        public JsonResult SignUp(
             [FromBody] UsuarioDto usuarioRequisicao,
             [FromServices]SigningConfigurations signingConfigurations)
         {
@@ -108,14 +108,14 @@ namespace AuthenticationService.AuthApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
-        protected JsonResult Login([FromBody] CredentialsDto credentials,
+        public JsonResult Login([FromBody] CredentialsDto credentials,
             [FromServices]SigningConfigurations signingConfigurations)
         {
             var passwordIsValid = false;
             Usuario user;
 
             if(credentials == null){
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                this.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return new JsonResult(GetResponseErrorObj(
                     _INVALID_MODEL_MESSAGE, (int)HttpStatusCode.BadRequest)); 
             }
@@ -123,7 +123,6 @@ namespace AuthenticationService.AuthApi.Controllers
             try{
                 user = _usuarioService.GetByEmail(credentials.email);
             }catch{
-                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 return new JsonResult(GetResponseErrorObj(
                     _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));                    
             }
@@ -169,7 +168,7 @@ namespace AuthenticationService.AuthApi.Controllers
         
         [HttpPost("{id}")]
         [Route("Profile")]
-        protected JsonResult Profile([FromQuery]string id, [FromHeader] string Bearer)
+        public JsonResult Profile([FromQuery]string id, [FromHeader] string Bearer)
         {
             Usuario usuario;
             bool tokenIsValid;
