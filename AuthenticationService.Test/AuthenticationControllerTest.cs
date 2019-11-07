@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using AuthenticationService.Application.AppModel.Dtos;
 using AuthenticationService.AuthApi.ConfigurationsApi;
 using Xunit;
+using System;
 
 namespace AuthenticationService.Test
 {
@@ -20,11 +21,9 @@ namespace AuthenticationService.Test
         private KeyHasherService _hashingService;
         private IConfiguration _config;
 
+        AuthenticationController _controller;
 
-        AuthenticationController _controller;  
-        
-        
-        public AuthenticationControllerTest(){
+        public AuthenticationControllerTest() {
             _mockUsuarioService = new Mock<IUsuarioService>();
             _usuarioValidator = new UsuarioValidator();
 
@@ -37,16 +36,40 @@ namespace AuthenticationService.Test
         }
 
         [Fact]
-        public void Login_WhenCalledWithNullObject_ReturnsBadRequestResult(){
+        public void Login_WhenCalledWithNull_ReturnsBadRequestResult()
+        {
 
             var siginConfigurations = new SigningConfigurations();
-            CredentialsDto credentialsDto = null;
 
-            var result = _controller.Login(credentialsDto, siginConfigurations);
+            var result = _controller.Login(null, siginConfigurations);
 
-            ResponseMesageViewDto resp = (ResponseMesageViewDto)result.Value;
+            Assert.Equal(400, result.StatusCode);
+        }
 
-            Assert.Equal("200", resp.statusCode.ToString());
+        [Fact]
+        public void SignUp_WhenCalledWithObjectWithoutMandatoryInfo_ReturnsBadRequestResult()
+        {
+            var siginConfigurations = new SigningConfigurations();            
+
+            var result = _controller.SignUp(
+                new UsuarioDto() 
+                {
+                    nome = "Jon Doe",
+                    email = "jondoe@dmain.com",
+                    senha = ""
+                }, 
+                siginConfigurations);
+
+            Assert.Equal(400, result.StatusCode);
+        }
+
+        [Fact]
+        public void Profile_WhenCalledWithInvalidToken_ReturnsUnautorizedResult()
+        {
+
+            var result = _controller.Profile(Guid.NewGuid().ToString(), "83xuryr38rmdx8743yrx12yr214");
+
+            Assert.Equal(401, result.StatusCode);
         }
     }
 }

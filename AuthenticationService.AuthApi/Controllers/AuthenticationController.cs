@@ -40,8 +40,8 @@ namespace AuthenticationService.AuthApi.Controllers
         #endregion 
 
         public AuthenticationController(
-            IUsuarioService usuarioService, 
-            UsuarioValidator validator, 
+            IUsuarioService usuarioService,
+            UsuarioValidator validator,
             TokenGenerationService tokenGenerator,
             KeyHasherService keyHasherService,
             IConfiguration config)
@@ -60,85 +60,110 @@ namespace AuthenticationService.AuthApi.Controllers
             [FromBody] UsuarioDto usuarioRequisicao,
             [FromServices]SigningConfigurations signingConfigurations)
         {
-            
-            try{
+
+            try
+            {
                 Usuario usuario = UsuarioMapper(usuarioRequisicao);
                 var results = _validator.Validate(usuario);
 
-                if(results.IsValid){
-                        //Atribui token
-                        usuario.Token = GenerateToken(
-                            usuario, 
-                            signingConfigurations);
+                if (results.IsValid)
+                {
+                    //Atribui token
+                    usuario.Token = GenerateToken(
+                        usuario,
+                        signingConfigurations);
 
-                        //Transforma a senha informada em um hash
-                        usuario.Senha = _keyHasherService.EncriptKey(usuario.Senha);
+                    //Transforma a senha informada em um hash
+                    usuario.Senha = _keyHasherService.EncriptKey(usuario.Senha);
 
-                        //Guarda o token original e transforma o token da entidade em um hash para persistir
-                        var token = usuario.Token;
-                        usuario.Token = _keyHasherService.EncriptKey(usuario.Token);
+                    //Guarda o token original e transforma o token da entidade em um hash para persistir
+                    var token = usuario.Token;
+                    usuario.Token = _keyHasherService.EncriptKey(usuario.Token);
 
-                        //Atribui data de criação e ultimo logon (DateTime.Now)     
-                        _usuarioService.PrepareEntityToSaveOrUpdate(usuario, _IS_NOT_UPDATE);
+                    //Atribui data de criação e ultimo logon (DateTime.Now)     
+                    _usuarioService.PrepareEntityToSaveOrUpdate(usuario, _IS_NOT_UPDATE);
 
-                        _usuarioService.Add(usuario);
+                    _usuarioService.Add(usuario);
 
-                        //Limpa a senha para retornar a entidade ao cliente
-                        usuario.Senha = String.Empty;
+                    //Limpa a senha para retornar a entidade ao cliente
+                    usuario.Senha = String.Empty;
 
-                        //Devolve o token original para retornar a entidade ao cliente
-                        usuario.Token = token;
+                    //Devolve o token original para retornar a entidade ao cliente
+                    usuario.Token = token;
 
-                        return new JsonResult(usuario);
-                }else{
-                    return new JsonResult(GetResponseErrorObj(
-                        _INVALID_MODEL_MESSAGE, (int)HttpStatusCode.BadRequest));
+                    return new JsonResult(usuario);
                 }
-            }catch(NullUserException e){
-                return new JsonResult(GetResponseErrorObj(
-                    e.Message, (int)HttpStatusCode.BadRequest));
+                else
+                {
+                    var response = new JsonResult(GetResponseErrorObj(
+                        _INVALID_MODEL_MESSAGE, (int)HttpStatusCode.BadRequest))
+                    { StatusCode = (int)HttpStatusCode.BadRequest };
+                    return response;
+                }
+            }
+            catch (NullUserException e)
+            {
+                var response = new JsonResult(GetResponseErrorObj(
+                    e.Message, (int)HttpStatusCode.BadRequest))
+                { StatusCode = (int)HttpStatusCode.BadRequest };
+                return response;
             }
             catch
             {
-                return new JsonResult(GetResponseErrorObj(
-                    _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));
+                var response = new JsonResult(GetResponseErrorObj(
+                    _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError))
+                { StatusCode = (int)HttpStatusCode.InternalServerError };
+                return response;
             }
         }
-        
+
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
         public JsonResult Login([FromBody] CredentialsDto credentials,
             [FromServices]SigningConfigurations signingConfigurations)
         {
-            var passwordIsValid = false;
+            bool passwordIsValid;
             Usuario user;
 
-            if(credentials == null){
-                this.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return new JsonResult(GetResponseErrorObj(
-                    _INVALID_MODEL_MESSAGE, (int)HttpStatusCode.BadRequest)); 
+            if (credentials == null)
+            {
+                var response = new JsonResult(GetResponseErrorObj(
+                    _INVALID_MODEL_MESSAGE, (int)HttpStatusCode.BadRequest))
+                { StatusCode = (int)HttpStatusCode.BadRequest };
+                return response;
             }
 
-            try{
+            try
+            {
                 user = _usuarioService.GetByEmail(credentials.email);
-            }catch{
-                return new JsonResult(GetResponseErrorObj(
-                    _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));                    
+            }
+            catch
+            {
+                var response = new JsonResult(GetResponseErrorObj(
+                    _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError))
+                { StatusCode = (int)HttpStatusCode.InternalServerError };
+                return response;
             }
 
-            if(user != null){
-                passwordIsValid =_keyHasherService.VerifyKey(credentials.senha, user.Senha);
-            }else{
-                return new JsonResult(GetResponseErrorObj(
-                    _INVALID_USER_OR_PASSWORD, (int)HttpStatusCode.Unauthorized));
+            if (user != null)
+            {
+                passwordIsValid = _keyHasherService.VerifyKey(credentials.senha, user.Senha);
+            }
+            else
+            {
+                var response = new JsonResult(GetResponseErrorObj(
+                    _INVALID_USER_OR_PASSWORD, (int)HttpStatusCode.Unauthorized))
+                { StatusCode = (int)HttpStatusCode.Unauthorized };
+                return response;
             }
 
-            if(passwordIsValid){
+            if (passwordIsValid)
+            {
 
                 //Atribui token
                 user.Token = GenerateToken(
-                    user, 
+                    user,
                     signingConfigurations);
 
                 //Guarda o token original e transforma o token da entidade em um hash para persistir
@@ -149,23 +174,30 @@ namespace AuthenticationService.AuthApi.Controllers
                 var preparedUser = _usuarioService
                     .PrepareEntityToSaveOrUpdate(user, _IS_UPDATE);
 
-                try{
+                try
+                {
                     _usuarioService.Update(preparedUser);
-                }catch{
+                }
+                catch
+                {
                     return new JsonResult(GetResponseErrorObj(
-                        _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError));                    
+                        _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError))
+                    { StatusCode = (int)HttpStatusCode.InternalServerError };
                 }
 
                 user.Token = clientToken;
-            }else{
+            }
+            else
+            {
                 return new JsonResult(GetResponseErrorObj(
-                    _INVALID_USER_OR_PASSWORD, (int)HttpStatusCode.Unauthorized));
+                    _INVALID_USER_OR_PASSWORD, (int)HttpStatusCode.Unauthorized))
+                { StatusCode = (int)HttpStatusCode.Unauthorized };
             }
 
             return new JsonResult(user);
         }
 
-        
+
         [HttpPost("{id}")]
         [Route("Profile")]
         public JsonResult Profile([FromQuery]string id, [FromHeader] string Bearer)
@@ -173,43 +205,61 @@ namespace AuthenticationService.AuthApi.Controllers
             Usuario usuario;
             bool tokenIsValid;
 
-            if(String.IsNullOrEmpty(Bearer)){
+            if (String.IsNullOrEmpty(Bearer))
+            {
                 return new JsonResult(GetResponseErrorObj(
-                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized));
-            }            
+                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized))
+                { StatusCode = (int)HttpStatusCode.Unauthorized };
+            }
 
-            if(String.IsNullOrEmpty(id)){
+            if (String.IsNullOrEmpty(id))
+            {
                 return new JsonResult(GetResponseErrorObj(
-                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized));
-            } 
+                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized))
+                { StatusCode = (int)HttpStatusCode.Unauthorized };
+            }
 
-            try{
+            try
+            {
                 var internalId = Guid.Parse(id);
                 usuario = _usuarioService.Select(internalId);
-            }catch{
+            }
+            catch
+            {
                 return new JsonResult(GetResponseErrorObj(
-                    _FORBIDDEN, (int)HttpStatusCode.InternalServerError));      
+                    _DEFAULT_ERROR_MESSAGE, (int)HttpStatusCode.InternalServerError))
+                { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
 
-            if(usuario != null){
-                tokenIsValid =_keyHasherService.VerifyKey(Bearer, usuario.Token);
-            }else{
+            if (usuario != null)
+            {
+                tokenIsValid = _keyHasherService.VerifyKey(Bearer, usuario.Token);
+            }
+            else
+            {
                 return new JsonResult(GetResponseErrorObj(
-                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized));
+                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized))
+                { StatusCode = (int)HttpStatusCode.Unauthorized };
             }
 
-            if(tokenIsValid){
+            if (tokenIsValid)
+            {
 
                 var elapsedTimeSinceLastLogon = DateTime.Now.Minute - usuario.UltimoLogin.Minute;
 
-                if(elapsedTimeSinceLastLogon >= 30){
+                if (elapsedTimeSinceLastLogon >= 30)
+                {
                     return new JsonResult(GetResponseErrorObj(
-                   _INVALID_SESSION, (int)HttpStatusCode.Unauthorized));
+                        _INVALID_SESSION, (int)HttpStatusCode.Unauthorized))
+                    { StatusCode = (int)HttpStatusCode.Unauthorized };
                 }
 
-            }else{
+            }
+            else
+            {
                 return new JsonResult(GetResponseErrorObj(
-                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized));
+                    _FORBIDDEN, (int)HttpStatusCode.Unauthorized))
+                { StatusCode = (int)HttpStatusCode.Unauthorized };
             }
 
             usuario.Senha = String.Empty;
@@ -221,7 +271,8 @@ namespace AuthenticationService.AuthApi.Controllers
         private Usuario UsuarioMapper(UsuarioDto usuarioRequisicao)
         {
             //==> SUBSTITUIR PELO USO DE AUTOMAPER===
-            if(usuarioRequisicao != null){
+            if (usuarioRequisicao != null)
+            {
                 var usuario = new Usuario
                 {
                     Nome = usuarioRequisicao.nome,
@@ -229,31 +280,34 @@ namespace AuthenticationService.AuthApi.Controllers
                     Senha = usuarioRequisicao.senha
                 };
 
-                if (usuarioRequisicao.telefones != null){
+                if (usuarioRequisicao.telefones != null)
+                {
                     usuario.Telefones = new List<Telefone>();
                     usuario.Telefones.AddRange(usuarioRequisicao.telefones);
                 }
-                return usuario;            
-            }else{
+                return usuario;
+            }
+            else
+            {
                 throw new NullUserException("Dados inválidos");
-            }         
+            }
         }
 
         private object GetResponseErrorObj(string message, int statusCode)
         {
             return new ResponseMesageViewDto()
-            { 
-                statusCode = statusCode, 
+            {
+                statusCode = statusCode,
                 mensagem = string.Format(message)
             };
         }
 
         private string GenerateToken(
-            Usuario usuario, 
+            Usuario usuario,
             SigningConfigurations signingConfigurations)
-        {            
+        {
             return _tokenGenerator.GenerateToken(usuario, signingConfigurations, _config);
         }
-        
+
     }
 }
