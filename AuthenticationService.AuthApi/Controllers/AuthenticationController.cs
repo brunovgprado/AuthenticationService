@@ -56,6 +56,7 @@ namespace AuthenticationService.AuthApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("SignUp")]
+        [NonAction]
         public JsonResult SignUp(
             [FromBody] UsuarioDto usuarioRequisicao,
             [FromServices]SigningConfigurations signingConfigurations)
@@ -120,6 +121,7 @@ namespace AuthenticationService.AuthApi.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
+        [NonAction]
         public JsonResult Login([FromBody] CredentialsDto credentials,
             [FromServices]SigningConfigurations signingConfigurations)
         {
@@ -200,6 +202,7 @@ namespace AuthenticationService.AuthApi.Controllers
 
         [HttpPost("{id}")]
         [Route("Profile")]
+        [NonAction]
         public JsonResult Profile([FromQuery]string id, [FromHeader] string Bearer)
         {
             Usuario usuario;
