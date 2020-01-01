@@ -1,5 +1,5 @@
-# AuthenticationService
-A donet core api that provides creation user profile and authentication user with token.
+# Authentication Service
+Authentication service is was created to improve my knowledge about some tecniques, libraries and frameworks.
 
 Dependencies
 ------------
