@@ -1,5 +1,5 @@
 # Authentication Service
-Authentication service is was created to improve my knowledge about some tecniques, libraries and frameworks.
+Authentication service was created to improve my knowledge about some tecniques, libraries and frameworks.
 
 Dependencies
 ------------
